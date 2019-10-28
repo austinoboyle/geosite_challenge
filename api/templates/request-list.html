@@ -118,7 +118,7 @@
 <b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize_quoted_links }}</span>{% endfor %}
 
 </span>
-{% if request.method == "OPTIONS" %}
+{% if request.method == "OPTIONS" or request.status != 200 %}
 {{ content|urlize_quoted_links }}
 {% endif %}
 </pre>
