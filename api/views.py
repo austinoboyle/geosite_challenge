@@ -65,5 +65,5 @@ class RequestDetails(APIView):
     def delete(self, request, pk):
         deletion_count, _ = Request.objects.filter(pk=pk).delete()
         if deletion_count == 0:
-            return Response(status=400)
+            return Response({'detail': "Cannot delete non-existent request with id: {}.".format(pk)}, status=400)
         return Response(status=200)
