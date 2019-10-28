@@ -9,6 +9,9 @@ from api.parsers import PlainTextParser
 from django.utils.decorators import method_decorator
 from api.decorators import require_login_or_401
 
+from api.renderers import RequestListRenderer
+from rest_framework.renderers import JSONRenderer
+
 
 class RequestList(APIView):
     """View recent system info.
@@ -17,6 +20,9 @@ class RequestList(APIView):
         - cpu_info(String): output of command: `cat /proc/cpuinfo`
         - date(String): output of command: `date`
     """
+
+    renderer_classes = [JSONRenderer, RequestListRenderer]
+
     @method_decorator(require_login_or_401)
     def get(self, request, format=None):
         new_request = Request(request_type=request.method)
