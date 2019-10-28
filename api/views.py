@@ -3,6 +3,7 @@ from api.serializers import RequestSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+import subprocess
 
 
 class RequestList(APIView):
@@ -11,7 +12,10 @@ class RequestList(APIView):
         new_request.save()
         requests = Request.objects.all()[:10]
         serializer = RequestSerializer(requests, many=True)
-        return Response(serializer.data)
+        cpu_info = subprocess.check_output(
+            ['cat', '/proc/cpuinfo']).decode('utf-8')
+        date = subprocess.check_output(['date']).decode('utf-8')
+        return Response({'requests': serializer.data, 'cpu_info': cpu_info, 'date': date})
 
 
 class RequestDetails(APIView):
