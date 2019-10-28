@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 import subprocess
+from api.parsers import PlainTextParser
 
 
 class RequestList(APIView):
@@ -19,7 +20,30 @@ class RequestList(APIView):
 
 
 class RequestDetails(APIView):
+
+    parser_classes = [PlainTextParser]
+
     def get(self, request, pk):
         r = get_object_or_404(Request, pk=pk)
         serializer = RequestSerializer(r)
         return Response(serializer.data)
+
+    def post(self, request, pk):
+        try:
+            r = Request.objects.get(pk=pk)
+        except Request.DoesNotExist:
+            return Response({'detail': "Request with id: {} does not exist".format(pk)}, status=400)
+        comment_text = request.data.decode('utf-8')
+        serializer = RequestSerializer(
+            r, data={'comment': comment_text}, partial=True)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+        serializer.save()
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        deletion_count, _ = Request.objects.filter(pk=pk).delete()
+        if deletion_count == 0:
+            return Response(status=400)
+        return Response(status=200)
