@@ -6,8 +6,13 @@ from django.shortcuts import get_object_or_404
 import subprocess
 from api.parsers import PlainTextParser
 
+from django.utils.decorators import method_decorator
+from api.decorators import require_login_or_401
+
 
 class RequestList(APIView):
+
+    @method_decorator(require_login_or_401)
     def get(self, request, format=None):
         new_request = Request(request_type=request.method)
         new_request.save()
@@ -23,11 +28,13 @@ class RequestDetails(APIView):
 
     parser_classes = [PlainTextParser]
 
+    @method_decorator(require_login_or_401)
     def get(self, request, pk):
         r = get_object_or_404(Request, pk=pk)
         serializer = RequestSerializer(r)
         return Response(serializer.data)
 
+    @method_decorator(require_login_or_401)
     def post(self, request, pk):
         try:
             r = Request.objects.get(pk=pk)
@@ -42,6 +49,7 @@ class RequestDetails(APIView):
         serializer.save()
         return Response(serializer.data)
 
+    @method_decorator(require_login_or_401)
     def delete(self, request, pk):
         deletion_count, _ = Request.objects.filter(pk=pk).delete()
         if deletion_count == 0:
