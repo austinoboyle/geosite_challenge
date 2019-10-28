@@ -3,6 +3,16 @@
 {% load i18n %}
 {% load rest_framework %}
 
+{% block style %}
+{{block.super}}
+<style>
+    td.comment {
+        max-width: 200px;
+        word-wrap: break-word;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="region"  aria-label="{% trans "request form" %}">
     {% block request_forms %}
