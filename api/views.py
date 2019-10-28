@@ -11,7 +11,12 @@ from api.decorators import require_login_or_401
 
 
 class RequestList(APIView):
-
+    """View recent system info.
+    Response Shape:
+        - requests([Request]): the 10 most recent requests
+        - cpu_info(String): output of command: `cat /proc/cpuinfo`
+        - date(String): output of command: `date`
+    """
     @method_decorator(require_login_or_401)
     def get(self, request, format=None):
         new_request = Request(request_type=request.method)
@@ -25,7 +30,8 @@ class RequestList(APIView):
 
 
 class RequestDetails(APIView):
-
+    """Retrieve, delete, or add comment to a request.
+    """
     parser_classes = [PlainTextParser]
 
     @method_decorator(require_login_or_401)
